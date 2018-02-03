@@ -19,6 +19,7 @@ buildscript {
 project.ext {
     supportVersion = "27.0.2"
     sdkVersion = 27
+    anko_version='0.10.4'
 }
 
 allprojects {

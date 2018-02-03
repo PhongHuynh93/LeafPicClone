@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">LeafPicClone</string>
+
+    <!--ERROR-->
+    <string name="storage_permission_denied">Permission to access storage was denied!\n I\'m not able to get your images!
+    </string>
 </resources>
