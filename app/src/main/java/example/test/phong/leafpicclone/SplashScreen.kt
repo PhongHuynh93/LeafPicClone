@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import org.horaapps.liz.ColorPalette
-import org.jetbrains.anko.startActivity
 
 /**
  * Created by user on 2/3/2018.
@@ -21,11 +20,11 @@ class SplashScreen : AppCompatActivity() {
         val ACTION_OPEN_ALBUM = "example.test.phong.leafpicclone.OPEN_ALBUM"
     }
 
-    val mColorSystem : Int by lazy {
+    val mColorSystem: Int by lazy {
         ColorPalette.getTransparentColor(ContextCompat.getColor(getApplicationContext(), R.color.md_black_1000), 70)
     }
 
-    var mPickmode : Boolean = false
+    var mPickmode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +49,8 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun startAlbumScreen() {
-        startActivity<MainActivity>()
-        finish()
+//        startActivity<MainActivity>()
+//        finish()
     }
 
     private fun setStatusBarColor() {
