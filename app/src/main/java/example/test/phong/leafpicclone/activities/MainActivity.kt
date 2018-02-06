@@ -1,7 +1,8 @@
-package example.test.phong.leafpicclone
+package example.test.phong.leafpicclone.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import example.test.phong.leafpicclone.R
 
 class MainActivity : AppCompatActivity() {
 
