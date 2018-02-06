@@ -2,6 +2,20 @@
     <string name="app_name">LeafPicClone</string>
 
     <!--ERROR-->
-    <string name="storage_permission_denied">Permission to access storage was denied!\n I\'m not able to get your images!
-    </string>
+    <string name="storage_permission_denied">Permission to access storage was denied!\n I\'m not able to get your images!</string>
+
+    <!--EASTER EGG-->
+    <string name="emoji_easter_egg">¯\\_(ツ)_/¯</string>
+    <string name="easter_egg_enable">Enabled Easter Egg: </string>
+    <string name="easter_egg_disable">Disabled Easter Egg: </string>
+
+    <!-- RANDOM -->
+    <string name="album">Album</string>
+    <string name="done">Done!</string>
+    <string name="there_is_nothing_to_show">There\'s nothing to show!</string>
+    <string name="insert_a_name">Insert something</string>
+    <string name="nothing_changed">Nothing changed!</string>
+    <string name="install_shortcut">Install shortcut</string>
+    <string name="landscape">Landscape</string>
+    <string name="portrait">Portrait</string>
 </resources>

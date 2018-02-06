@@ -5,6 +5,6 @@ import org.horaapps.liz.ThemedActivity
 /**
  * Created by user on 2/7/2018.
  */
-class SharedMediaActivity : ThemedActivity() {
+open class SharedMediaActivity : ThemedActivity() {
 
 }
