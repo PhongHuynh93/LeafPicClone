@@ -10,7 +10,22 @@ class MainActivity : SharedMediaActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        initUi()
+        initUi()
 
+        // todo pickmode
+
+        // todo add fragment album
+
+        // todo add fragment media
+
+
+    }
+
+    private fun initUi() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
     }
 }
