@@ -10,14 +10,16 @@ enum class CardViewStyle constructor(var value: Int, var layout: Int) {
     FLAT(1, R.layout.card_album_flat),
     COMPACT(2, R.layout.card_album_compact);
 
-    val size = CardViewStyle.values().size
+    companion object {
+        val size = CardViewStyle.values().size
 
-    fun fromValue(value: Int): CardViewStyle {
-        when (value) {
-            0 -> return MATERIAL
-            1 -> return FLAT
-            2 -> return COMPACT
-            else -> return MATERIAL
+        fun fromValue(value: Int): CardViewStyle {
+            when (value) {
+                0 -> return MATERIAL
+                1 -> return FLAT
+                2 -> return COMPACT
+                else -> return MATERIAL
+            }
         }
     }
 }

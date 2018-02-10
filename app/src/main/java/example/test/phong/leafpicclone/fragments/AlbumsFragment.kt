@@ -4,7 +4,9 @@ package example.test.phong.leafpicclone.fragments
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.view.*
+import android.view.animation.OvershootInterpolator
 import example.test.phong.leafpicclone.R
 import example.test.phong.leafpicclone.data.Album
 import example.test.phong.leafpicclone.data.local.Prefs
@@ -32,9 +34,13 @@ class AlbumsFragment : BaseFragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_albums, container, false)
         // todo declare rcv and adapter
+
+
         rv.apply {
             setHasFixedSize(true)
             addItemDecoration(GridSpacingItemDecoration(columnCounts(), Measure.pxToDp(3, context), true))
+            layoutManager = GridLayoutManager(context, columnCounts())
+            itemAnimator = LandingAnimator(OvershootInterpolator(1f))
         }
 
         return view

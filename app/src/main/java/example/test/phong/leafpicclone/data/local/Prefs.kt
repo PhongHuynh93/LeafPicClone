@@ -30,6 +30,18 @@ class Prefs {
         fun getFolderColumnsLandscape(): Int {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
+
+        fun getCardStyle(): CardViewStyle {
+            return CardViewStyle.fromValue(sharedPrefs.get(Keys.CARD_STYLE, Defaults.CARD_STYLE))
+        }
+
+        fun showMediaCount(): Boolean {
+            return sharedPrefs.get(Keys.SHOW_MEDIA_COUNT, Defaults.SHOW_MEDIA_COUNT)
+        }
+
+        fun showAlbumPath(): Boolean {
+            return sharedPrefs.get(Keys.SHOW_ALBUM_PATH, Defaults.SHOW_ALBUM_PATH)
+        }
     }
 }
 
@@ -90,4 +102,9 @@ class SharedPrefs(var context: Context) {
     fun get(key: String, defaultValue: Int): Int {
         return sharedPrefs.getInt(key, defaultValue)
     }
+
+    fun get(key: String, defaultValue: Boolean): Boolean {
+        return sharedPrefs.getBoolean(key, defaultValue)
+    }
+
 }
