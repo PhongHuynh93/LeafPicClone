@@ -8,7 +8,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import javax.xml.transform.Transformer
 
 /**
  * Created by user on 2/8/2018.
@@ -64,13 +63,6 @@ inline fun <T> Observable<T>.workBgDoneMain(crossinline f: (t: T) -> Unit) {
                     f(t)
                 }
             })
-}
-
-fun <T> Observable<T>.applySchedulers(): Transformer<T, T> {
-    return { observable ->
-        observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-    }
 }
 
 

@@ -7,22 +7,38 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.view.*
 import android.view.animation.OvershootInterpolator
+import com.orhanobut.hawk.Hawk
 import example.test.phong.leafpicclone.R
+import example.test.phong.leafpicclone.adapter.AlbumsAdapter
 import example.test.phong.leafpicclone.data.Album
+import example.test.phong.leafpicclone.data.AlbumsHelper
+import example.test.phong.leafpicclone.data.HandlingAlbums
+import example.test.phong.leafpicclone.data.SortingOrder
 import example.test.phong.leafpicclone.data.local.Prefs
+import example.test.phong.leafpicclone.data.provider.CPHelper
+import example.test.phong.leafpicclone.data.sort.SortingMode
 import example.test.phong.leafpicclone.util.GridSpacingItemDecoration
 import example.test.phong.leafpicclone.util.Measure
+import example.test.phong.leafpicclone.util.workBgDoneMain
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.fragment_albums.*
 import org.horaapps.liz.ThemeHelper
+import java.util.*
+
 /**
  * A simple [Fragment] subclass.
  */
 class AlbumsFragment : BaseFragment() {
-
     companion object {
         fun newInstance() = AlbumsFragment()
     }
+
+    private val hidden: Boolean = false
+    private var excluded = ArrayList<String>()
+    private var mAdapter: AlbumsAdapter? = null
+    var clickListener: AlbumClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,25 +49,31 @@ class AlbumsFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_albums, container, false)
-        // todo declare rcv and adapter
+        return inflater.inflate(R.layout.fragment_albums, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mAdapter = AlbumsAdapter(context!!, sortingMode(), sortingOrder()).apply {
+            onClickSubject.workBgDoneMain {
+                clickListener?.onAlbumClick(it)
+            }
 
+            onChangeSelectedSubject.workBgDoneMain {
+                swipe_refresh.isEnabled = !this.selecting()
+                updateToolbar()
+                activity?.invalidateOptionsMenu()
+            }
+        }
         rv.apply {
             setHasFixedSize(true)
             addItemDecoration(GridSpacingItemDecoration(columnCounts(), Measure.pxToDp(3, context), true))
             layoutManager = GridLayoutManager(context, columnCounts())
             itemAnimator = LandingAnimator(OvershootInterpolator(1f))
+            this.adapter = mAdapter
         }
 
-        return view
-    }
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // todo display albums
+        swipe_refresh.setOnRefreshListener(this::displayAlbums)
         displayAlbums()
     }
 
@@ -77,10 +99,52 @@ class AlbumsFragment : BaseFragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun displayAlbums() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        // todo call the presenter to display album
+    private fun updateToolbar() {
+        editModeListener?.let {
+            if (editMode()) {
+                it.changedEditMode(true, mAdapter!!.selectedCount, mAdapter!!.itemCount, View.OnClickListener {
+                    mAdapter?.clearSelected()
+                }, null)
+            } else {
+                it.changedEditMode(false, 0, 0, null, null)
+            }
+        }
     }
+
+    override fun clearSelected(): Boolean = mAdapter?.clearSelected() ?: false
+
+    override fun editMode(): Boolean = mAdapter?.selecting() ?: false
+
+    private fun sortingOrder(): SortingOrder {
+        return mAdapter?.sortingOrder ?: AlbumsHelper.getSortingOrder()
+    }
+
+    private fun sortingMode(): SortingMode {
+        return mAdapter?.sortingMode ?: AlbumsHelper.getSortingMode()
+    }
+
+    private fun displayAlbums() {
+        mAdapter?.clear()
+        val db = HandlingAlbums.getInstance(context!!.applicationContext).readableDatabase
+        CPHelper.getAlbums(context!!, hidden, excluded, sortingMode(), sortingOrder())
+                .subscribeOn(Schedulers.io())
+                .map { album -> album.withSettings(HandlingAlbums.getSettings(db, album.path!!)) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { album -> mAdapter?.add(album) },
+                        { throwable ->
+                            swipe_refresh.isRefreshing = false
+                            throwable.printStackTrace()
+                        },
+                        {
+                            db.close()
+                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
+                            swipe_refresh.isRefreshing = false
+                            Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths())
+                        })
+    }
+
+    private fun getCount(): Int = mAdapter?.itemCount ?: 0
 
     private fun setupColumns() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -91,14 +155,14 @@ class AlbumsFragment : BaseFragment() {
         return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
             Prefs.getFolderColumnsPortrait()
         else
-            Prefs.getFolderColumnsLandscape()    }
-
-    fun setListener(listener: AlbumClickListener) {
-
+            Prefs.getFolderColumnsLandscape()
     }
 
-    override fun refreshTheme(themeHelper: ThemeHelper?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun refreshTheme(t: ThemeHelper) {
+        rv.setBackgroundColor(t.getBackgroundColor())
+        mAdapter?.refreshTheme(t)
+        swipe_refresh.setColorSchemeColors(t.getAccentColor())
+        swipe_refresh.setProgressBackgroundColorSchemeColor(t.getBackgroundColor())
     }
 }// Required empty public constructor
 

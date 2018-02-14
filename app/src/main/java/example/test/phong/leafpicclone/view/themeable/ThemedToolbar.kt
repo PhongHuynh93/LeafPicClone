@@ -1,8 +1,8 @@
 package example.test.phong.leafpicclone.view.themeable
 
 import android.content.Context
+import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
-import android.widget.Toolbar
 import org.horaapps.liz.ThemeHelper
 import org.horaapps.liz.Themed
 

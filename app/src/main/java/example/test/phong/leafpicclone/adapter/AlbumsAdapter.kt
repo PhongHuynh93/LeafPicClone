@@ -13,12 +13,18 @@ import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import example.test.phong.leafpicclone.R
-import example.test.phong.leafpicclone.data.*
+import example.test.phong.leafpicclone.data.Album
+import example.test.phong.leafpicclone.data.CardViewStyle
+import example.test.phong.leafpicclone.data.Media
+import example.test.phong.leafpicclone.data.SortingOrder
 import example.test.phong.leafpicclone.data.local.Prefs
+import example.test.phong.leafpicclone.data.sort.AlbumsComparators
+import example.test.phong.leafpicclone.data.sort.SortingMode
 import example.test.phong.leafpicclone.util.StringUtils
 import io.reactivex.subjects.PublishSubject
 import org.horaapps.liz.*
 import org.horaapps.liz.ui.ThemedIcon
+import java.util.*
 
 /**
  * Created by user on 2/10/2018.
@@ -174,5 +180,27 @@ class AlbumsAdapter(context: Context, var sortingMode: SortingMode, var sortingO
     fun clear() {
         albums.clear()
         notifyDataSetChanged()
+    }
+
+    fun add(album: Album): Int {
+        var i = Collections.binarySearch(
+                albums, album, AlbumsComparators.getComparator(sortingMode, sortingOrder))
+        if (i < 0) i = i.inv()
+        albums.add(i, album)
+        notifyItemInserted(i)
+        //int finalI = i;
+        //((ThemedActivity) context).runOnUiThread(() -> notifyItemInserted(finalI));
+        return i
+
+    }
+
+    fun getAlbumsPaths(): List<String?> {
+        val list = ArrayList<String?>()
+
+        for (album in albums) {
+            list.add(album.path)
+        }
+
+        return list
     }
 }
