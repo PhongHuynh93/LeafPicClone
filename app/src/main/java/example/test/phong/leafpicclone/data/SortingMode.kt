@@ -5,7 +5,7 @@ import android.provider.MediaStore
 /**
  * Created by user on 2/10/2018.
  */
-enum class SortingMode @JvmOverloads constructor(var value: Int, var mediaColumn: String, var albumsColumn: String = mediaColumn){
+enum class SortingMode constructor(var value: Int, var mediaColumn: String, var albumsColumn: String = mediaColumn){
     NAME(0, MediaStore.MediaColumns.DISPLAY_NAME, MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME),
     DATE(1, MediaStore.MediaColumns.DATE_MODIFIED, "max(" + MediaStore.Images.Media.DATE_MODIFIED + ")"),
     SIZE(2, MediaStore.MediaColumns.SIZE, "count(*)"),

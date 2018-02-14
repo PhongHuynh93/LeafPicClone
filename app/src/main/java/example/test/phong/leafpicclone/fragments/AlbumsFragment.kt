@@ -12,6 +12,7 @@ import example.test.phong.leafpicclone.data.Album
 import example.test.phong.leafpicclone.data.local.Prefs
 import example.test.phong.leafpicclone.util.GridSpacingItemDecoration
 import example.test.phong.leafpicclone.util.Measure
+import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.fragment_albums.*
 import org.horaapps.liz.ThemeHelper
 /**
