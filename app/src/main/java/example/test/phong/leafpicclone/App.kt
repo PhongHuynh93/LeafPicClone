@@ -2,6 +2,9 @@ package example.test.phong.leafpicclone
 
 import android.app.Application
 import android.content.Context
+import com.mikepenz.iconics.Iconics
+import com.orhanobut.hawk.Hawk
+import example.test.phong.leafpicclone.data.local.Prefs
 
 /**
  * Created by user on 2/4/2018.
@@ -14,5 +17,18 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         sAppContext = this
+        registerFontIcons()
+        initialiseStorage()
+    }
+
+    private fun registerFontIcons() {
+        Iconics.registerFont(GoogleMaterial())
+        Iconics.registerFont(CommunityMaterial())
+        Iconics.registerFont(FontAwesome())
+    }
+
+    private fun initialiseStorage() {
+        Prefs.init(this)
+        Hawk.init(this).build()
     }
 }

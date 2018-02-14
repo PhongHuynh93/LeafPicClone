@@ -1,17 +1,32 @@
 package example.test.phong.leafpicclone.data
 
+import android.database.Cursor
+import android.provider.MediaStore
 import com.bumptech.glide.signature.ObjectKey
+import example.test.phong.leafpicclone.util.StringUtils
 
 /**
  * Created by user on 2/8/2018.
  */
 data class Album @JvmOverloads constructor(var name: String? = null, val path: String? = null, var id: Long = -1, var dateModifier: Long = -1, var count: Int = -1,
-                                           var selected: Boolean = false, var settings: AlbumSettings? = null, var lastMedia: Media? = null) {
+                                           var selected: Boolean = false, var settings: AlbumSettings? = null, var lastMedia: Media? = null) : CursorHandler<Album> {
+
+    constructor(cur: Cursor) : this(
+            path = StringUtils.getBucketPathByImagePath(cur.getString(3)),
+            name = cur.getString(1),
+            id = cur.getLong(0),
+            count = cur.getInt(2),
+            dateModifier = cur.getLong(4),
+            lastMedia = Media(cur.getString(3)))
 
     companion object {
         fun getEmptyAlbum(): Album {
             val album = Album(name = null, path = null, settings = AlbumSettings.getDefaults())
             return album
+        }
+
+        fun getProjection(): Array<String> {
+            return arrayOf(MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, "count(*)", MediaStore.Images.Media.DATA, "max(" + MediaStore.Images.Media.DATE_MODIFIED + ")")
         }
     }
 
@@ -37,6 +52,21 @@ data class Album @JvmOverloads constructor(var name: String? = null, val path: S
         this.selected = selected
         return true
     }
+
+    fun withSettings(settings: AlbumSettings): Album {
+        this.settings = settings
+        return this
+    }
+
+    override fun handle(cu: Cursor): Album {
+        return Album(cu)
+    }
+
+    override fun getProjection(): Array<String> {
+        return arrayOf(MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, "count(*)", MediaStore.Images.Media.DATA, "max(" + MediaStore.Images.Media.DATE_MODIFIED + ")")
+    }
+
+    fun isPinned():Boolean = settings?.coverPath != null
 }
 
 

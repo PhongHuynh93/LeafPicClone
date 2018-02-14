@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.content.edit
 import example.test.phong.leafpicclone.data.CardViewStyle
-import example.test.phong.leafpicclone.data.SortingMode
+import example.test.phong.leafpicclone.data.sort.SortingMode
 import example.test.phong.leafpicclone.data.SortingOrder
 
 /**
@@ -53,7 +53,11 @@ class Prefs {
         }
 
         fun getAlbumSortingOrder(): SortingOrder {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            return SortingOrder.fromValue(sharedPrefs.get(Keys.ALBUM_SORTING_ORDER, Defaults.ALBUM_SORTING_ORDER))
+        }
+
+        fun showVideos(): Boolean {
+            return sharedPrefs.get(Keys.SHOW_VIDEOS, Defaults.SHOW_VIDEOS)
         }
     }
 }

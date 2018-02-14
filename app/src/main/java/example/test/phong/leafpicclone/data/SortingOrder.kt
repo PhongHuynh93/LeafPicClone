@@ -17,4 +17,10 @@ enum class SortingOrder constructor(var value: Int) {
     fun fromValue(value: Int): SortingOrder {
         return if (value == 0) DESCENDING else ASCENDING
     }
+
+    companion object {
+        fun fromValue(value: Int): SortingOrder {
+            return if (value == 0) DESCENDING else ASCENDING
+        }
+    }
 }

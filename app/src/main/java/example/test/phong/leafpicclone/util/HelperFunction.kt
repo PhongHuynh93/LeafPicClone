@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import javax.xml.transform.Transformer
 
 /**
  * Created by user on 2/8/2018.
@@ -58,11 +59,18 @@ fun AppCompatActivity.addFragment(fragmentNew: Fragment, tag: String? = null, @I
 inline fun <T> Observable<T>.workBgDoneMain(crossinline f: (t: T) -> Unit) {
     subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object: Consumer<T> {
+            .subscribe(object : Consumer<T> {
                 override fun accept(t: T) {
                     f(t)
                 }
             })
+}
+
+fun <T> Observable<T>.applySchedulers(): Transformer<T, T> {
+    return { observable ->
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
 }
 
 
