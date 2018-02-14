@@ -11,6 +11,7 @@ import android.widget.Toast
 import example.test.phong.leafpicclone.PermissionUtils
 import example.test.phong.leafpicclone.R
 import org.horaapps.liz.ColorPalette
+import org.jetbrains.anko.startActivity
 
 /**
  * Created by user on 2/3/2018.
@@ -51,8 +52,8 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun startAlbumScreen() {
-//        startActivity<MainActivity>()
-//        finish()
+        startActivity<MainActivity>()
+        finish()
     }
 
     private fun setStatusBarColor() {

@@ -5,8 +5,16 @@ import com.bumptech.glide.signature.ObjectKey
 /**
  * Created by user on 2/8/2018.
  */
-data class Album @JvmOverloads constructor(var name: String, val path: String, var id: Long = -1, var dateModifier: Long = -1, var count: Int = -1,
-                                           var selected: Boolean = false, var settings: AlbumsSetting? = null, var lastMedia: Media? = null) {
+data class Album @JvmOverloads constructor(var name: String? = null, val path: String? = null, var id: Long = -1, var dateModifier: Long = -1, var count: Int = -1,
+                                           var selected: Boolean = false, var settings: AlbumSettings? = null, var lastMedia: Media? = null) {
+
+    companion object {
+        fun getEmptyAlbum(): Album {
+            val album = Album(name = null, path = null, settings = AlbumSettings.getDefaults())
+            return album
+        }
+    }
+
     fun getCover(): Media {
         if (hasCover())
             return Media(path = settings?.coverPath)
@@ -23,10 +31,12 @@ data class Album @JvmOverloads constructor(var name: String, val path: String, v
         return selected
     }
 
-}
-
-data class AlbumsSetting(var coverPath: String? = null, var sortingMode: Int = -1, var sortingOrder: Int = -1, var pinned: Boolean = false, var filterMode: FilterMode = FilterMode.ALL) {
-
+    fun setSelected(selected: Boolean): Boolean {
+        if (this.selected == selected)
+            return false
+        this.selected = selected
+        return true
+    }
 }
 
 

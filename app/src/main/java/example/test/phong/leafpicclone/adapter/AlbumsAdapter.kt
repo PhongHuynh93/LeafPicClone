@@ -107,7 +107,7 @@ class AlbumsAdapter(context: Context, var sortingMode: SortingMode, var sortingO
         selectedCount += if (increase) 1 else -1
     }
 
-    private fun selecting(): Boolean = (selectedCount > 0)
+    fun selecting(): Boolean = (selectedCount > 0)
 
     class ViewHolder(view: View) : ThemedViewHolder(view) {
         var card: CardView
@@ -133,7 +133,6 @@ class AlbumsAdapter(context: Context, var sortingMode: SortingMode, var sortingO
         }
 
         override fun refreshTheme(themeHelper: ThemeHelper?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         fun refreshTheme(theme: ThemeHelper, cvs: CardViewStyle, selected: Boolean) {
@@ -154,5 +153,26 @@ class AlbumsAdapter(context: Context, var sortingMode: SortingMode, var sortingO
 
             path.setTextColor(theme.subTextColor)
         }
+    }
+
+    fun clearSelected(): Boolean {
+        var changed = true
+        for (i in albums.indices) {
+            val b = albums[i].setSelected(false)
+            if (b)
+                notifyItemChanged(i)
+            changed = changed and b
+        }
+
+        selectedCount = 0
+
+        if (changed)
+            onChangeSelectedSubject.onNext(Album.getEmptyAlbum())
+        return changed
+    }
+
+    fun clear() {
+        albums.clear()
+        notifyDataSetChanged()
     }
 }

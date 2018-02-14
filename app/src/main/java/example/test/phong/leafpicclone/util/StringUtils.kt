@@ -50,7 +50,7 @@ class StringUtils {
             return s
         }
 
-        fun html(s: String): Spanned {
+        fun html(s: String?): Spanned {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY)
             else
@@ -129,15 +129,15 @@ class StringUtils {
             return String.format("%.1f %sB", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
         }
 
-        fun b(content: String): String {
+        fun b(content: String?): String {
             return String.format(Locale.ENGLISH, "<b>%s</b>", content)
         }
 
-        fun i(content: String): String {
+        fun i(content: String?): String {
             return String.format(Locale.ENGLISH, "<i>%s</i>", content)
         }
 
-        fun htmlFormat(content: String, color: Int, bold: Boolean, italic: Boolean): Spanned {
+        fun htmlFormat(content: String?, color: Int, bold: Boolean, italic: Boolean): Spanned {
             var res = content
             if (color != -1) res = color(color, res)
             if (bold) res = b(res)
@@ -153,13 +153,13 @@ class StringUtils {
             return html(res)
         }
 
-        fun color(color: Int, content: String): String {
+        fun color(color: Int, content: String?): String {
             return String.format(Locale.ENGLISH,
                     "<font color='%s'>%s</font>",
                     ColorPalette.getHexColor(color), content)
         }
 
-        fun color(color: String, content: String): String {
+        fun color(color: String, content: String?): String {
             return String.format(Locale.ENGLISH,
                     "<font color='%s'>%s</font>",
                     color, content)

@@ -12,14 +12,16 @@ enum class SortingMode constructor(var value: Int, var mediaColumn: String, var 
     TYPE(3, MediaStore.MediaColumns.MIME_TYPE),
     NUMERIC(4, MediaStore.MediaColumns.DISPLAY_NAME, MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME);
 
-    fun fromValue(value: Int): SortingMode {
-        when (value) {
-            0 -> return NAME
-            1 -> return DATE
-            2 -> return SIZE
-            3 -> return TYPE
-            4 -> return NUMERIC
-            else -> return DATE
+    companion object {
+        fun fromValue(value: Int): SortingMode {
+            when (value) {
+                0 -> return NAME
+                1 -> return DATE
+                2 -> return SIZE
+                3 -> return TYPE
+                4 -> return NUMERIC
+                else -> return DATE
+            }
         }
     }
 }

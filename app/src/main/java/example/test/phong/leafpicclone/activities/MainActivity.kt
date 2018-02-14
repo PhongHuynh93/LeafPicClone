@@ -9,7 +9,7 @@ import example.test.phong.leafpicclone.fragments.AlbumClickListener
 import example.test.phong.leafpicclone.fragments.AlbumsFragment
 import example.test.phong.leafpicclone.fragments.EditModeListener
 import example.test.phong.leafpicclone.fragments.NothingToShowListener
-import example.test.phong.leafpicclone.util.replaceFragmentSafely
+import example.test.phong.leafpicclone.util.addFragment
 import example.test.phong.leafpicclone.util.whenNull
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
@@ -28,11 +28,11 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
             debug { "add fragment album" }
             val albumsFragment = AlbumsFragment.newInstance()
                     .apply {
-                        setListener(this@MainActivity)
-                        setEditModeListener(this@MainActivity)
-                        setNothingToShowListener(this@MainActivity)
+                        clickListener = this@MainActivity
+                        editModeListener = this@MainActivity
+                        nothingToShowListener = this@MainActivity
                     }
-            replaceFragmentSafely(albumsFragment, containerViewId = R.id.content)
+            addFragment(albumsFragment, containerViewId = R.id.content)
             return
         }
 

@@ -2,6 +2,7 @@ package example.test.phong.leafpicclone.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.content.edit
 import example.test.phong.leafpicclone.data.CardViewStyle
 import example.test.phong.leafpicclone.data.SortingMode
 import example.test.phong.leafpicclone.data.SortingOrder
@@ -41,6 +42,18 @@ class Prefs {
 
         fun showAlbumPath(): Boolean {
             return sharedPrefs.get(Keys.SHOW_ALBUM_PATH, Defaults.SHOW_ALBUM_PATH)
+        }
+
+        fun getAlbumSortingMode(): SortingMode {
+            return SortingMode.fromValue(sharedPrefs.get(Keys.ALBUM_SORTING_MODE, Defaults.ALBUM_SORTING_MODE))
+        }
+
+        fun setAlbumSortingMode(sortingMode: SortingMode) {
+            sharedPrefs.put(Keys.ALBUM_SORTING_MODE, sortingMode.value)
+        }
+
+        fun getAlbumSortingOrder(): SortingOrder {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 }
@@ -107,4 +120,15 @@ class SharedPrefs(var context: Context) {
         return sharedPrefs.getBoolean(key, defaultValue)
     }
 
+    fun put(key: String, value: Int) {
+        sharedPrefs.edit {
+            putInt(key, value)
+        }
+    }
+
+    fun put(key: String, value: Boolean) {
+        sharedPrefs.edit {
+            putBoolean(key, value)
+        }
+    }
 }
