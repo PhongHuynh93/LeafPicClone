@@ -5,6 +5,8 @@ import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -64,6 +66,21 @@ inline fun <T> Observable<T>.workBgDoneMain(crossinline f: (t: T) -> Unit) {
                 }
             })
 }
+
+//Observable
+fun <T> Observable<T>.applyIoScheduler() = applyScheduler(Schedulers.io())
+fun <T> Observable<T>.applyComputationScheduler() = applyScheduler(Schedulers.computation())
+private fun <T> Observable<T>.applyScheduler(scheduler: Scheduler) =
+        subscribeOn(scheduler).observeOn(AndroidSchedulers.mainThread())
+
+//Single
+fun <T> Single<T>.applyIoScheduler() = applyScheduler(Schedulers.io())
+fun <T> Single<T>.applyComputationScheduler() = applyScheduler(Schedulers.computation())
+private fun <T> Single<T>.applyScheduler(scheduler: Scheduler) =
+        subscribeOn(scheduler).observeOn(AndroidSchedulers.mainThread())
+
+//Completable
+//..
 
 
 

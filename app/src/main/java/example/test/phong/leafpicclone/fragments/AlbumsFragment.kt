@@ -2,6 +2,7 @@ package example.test.phong.leafpicclone.fragments
 
 
 import android.content.res.Configuration
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -17,20 +18,22 @@ import example.test.phong.leafpicclone.data.SortingOrder
 import example.test.phong.leafpicclone.data.local.Prefs
 import example.test.phong.leafpicclone.data.provider.CPHelper
 import example.test.phong.leafpicclone.data.sort.SortingMode
+import example.test.phong.leafpicclone.databinding.FragmentAlbumsBinding
 import example.test.phong.leafpicclone.util.GridSpacingItemDecoration
 import example.test.phong.leafpicclone.util.Measure
+import example.test.phong.leafpicclone.util.applyIoScheduler
 import example.test.phong.leafpicclone.util.workBgDoneMain
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxkotlin.subscribeBy
 import jp.wasabeef.recyclerview.animators.LandingAnimator
 import kotlinx.android.synthetic.main.fragment_albums.*
 import org.horaapps.liz.ThemeHelper
+import org.jetbrains.anko.AnkoLogger
 import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class AlbumsFragment : BaseFragment() {
+class AlbumsFragment : BaseFragment(), AnkoLogger {
     companion object {
         fun newInstance() = AlbumsFragment()
     }
@@ -39,6 +42,7 @@ class AlbumsFragment : BaseFragment() {
     private var excluded = ArrayList<String>()
     private var mAdapter: AlbumsAdapter? = null
     var clickListener: AlbumClickListener? = null
+    private lateinit var mBinding: FragmentAlbumsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,10 +54,12 @@ class AlbumsFragment : BaseFragment() {
         return HandlingAlbums.getInstance(context!!.getApplicationContext())
     }
 
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_albums, container, false)
+        mBinding = DataBindingUtil.inflate<FragmentAlbumsBinding>(inflater, R.layout.fragment_albums, container, false)
+        return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -128,24 +134,23 @@ class AlbumsFragment : BaseFragment() {
     }
 
     private fun displayAlbums() {
-        mAdapter?.clear()
         val db = HandlingAlbums.getInstance(context!!.applicationContext).readableDatabase
         CPHelper.getAlbums(context!!, hidden, excluded, sortingMode(), sortingOrder())
-                .subscribeOn(Schedulers.io())
                 .map { album -> album.withSettings(HandlingAlbums.getSettings(db, album.path!!)) }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { album -> mAdapter?.add(album) },
-                        { throwable ->
-                            swipe_refresh.isRefreshing = false
-                            throwable.printStackTrace()
-                        },
-                        {
-                            db.close()
-                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
-                            swipe_refresh.isRefreshing = false
-                            Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths())
-                        })
+                .applyIoScheduler()
+                .doOnSubscribe {
+                    mAdapter?.clear()
+                    mBinding.isRefreshing = true
+                }
+                .doFinally {
+                    mBinding.isRefreshing = false
+                    db.close()
+                    nothingToShowListener?.changedNothingToShow(getCount() == 0)
+                }
+                .subscribeBy(
+                        onNext = { album -> mAdapter?.add(album) },
+                        onError = { throwable -> throwable.printStackTrace() } ,
+                        onComplete = { Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths()) })
     }
 
     private fun getCount(): Int = mAdapter?.itemCount ?: 0
