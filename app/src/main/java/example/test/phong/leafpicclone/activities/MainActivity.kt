@@ -1,6 +1,7 @@
 package example.test.phong.leafpicclone.activities
 
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,6 +13,7 @@ import example.test.phong.leafpicclone.BuildConfig
 import example.test.phong.leafpicclone.R
 import example.test.phong.leafpicclone.activities.base.SharedMediaActivity
 import example.test.phong.leafpicclone.data.Album
+import example.test.phong.leafpicclone.databinding.ActivityMainBinding
 import example.test.phong.leafpicclone.fragments.AlbumClickListener
 import example.test.phong.leafpicclone.fragments.AlbumsFragment
 import example.test.phong.leafpicclone.fragments.EditModeListener
@@ -21,14 +23,15 @@ import example.test.phong.leafpicclone.util.whenNull
 import example.test.phong.leafpicclone.view.navigation_drawer.NavigationDrawer
 import example.test.phong.leafpicclone.view.themeable.ThemedToolbar
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.error_layout.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 
 class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, EditModeListener, NothingToShowListener, NavigationDrawer.ItemListener {
+    private lateinit var mBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        mBinding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         initUi()
 
@@ -56,17 +59,9 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
         super.onPostResume()
     }
 
-    override fun changedNothingToShow(nothingToShow: Boolean) {
-        enableNothingToSHowPlaceHolder(nothingToShow)
-    }
-
-    private fun enableNothingToSHowPlaceHolder(status: Boolean) {
-        nothing_to_show_placeholder.visibility =
-                if (status) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
+    //    fixme should change this name
+    override fun changedNothingToShow(isLoading: Boolean) {
+        mBinding.isLoading = isLoading
     }
 
     override fun changedEditMode(editMode: Boolean, selected: Int, total: Int, listener: View.OnClickListener?, title: String?) {

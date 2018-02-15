@@ -42,7 +42,6 @@ class AlbumsFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // todo set toolbar
         setHasOptionsMenu(true)
         excluded = db().getExcludedFolders(context!!)
     }
@@ -143,7 +142,8 @@ class AlbumsFragment : BaseFragment() {
                         },
                         {
                             db.close()
-                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
+                            nothingToShowListener?.changedNothingToShow(true)
+//                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
                             swipe_refresh.isRefreshing = false
                             Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths())
                         })
