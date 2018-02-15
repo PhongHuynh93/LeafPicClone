@@ -43,9 +43,13 @@ class SplashScreen : AppCompatActivity() {
         // check permission here
         if (PermissionUtils.isStoragePermissionGranted(this)) {
             // open album activity
-            if (intent.action.equals(ACTION_OPEN_ALBUM)) {
-                startAlbumScreen()
-            } else startAlbumScreen()
+            intent?.action?.let {
+                if (it.equals(ACTION_OPEN_ALBUM)) {
+                    startAlbumScreen()
+                    return
+                }
+            }
+            startAlbumScreen()
         } else {
             PermissionUtils.requestPermissions(this, EXTERNAL_STORAGE_PERMISSIONS, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
