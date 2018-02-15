@@ -142,8 +142,7 @@ class AlbumsFragment : BaseFragment() {
                         },
                         {
                             db.close()
-                            nothingToShowListener?.changedNothingToShow(true)
-//                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
+                            nothingToShowListener?.changedNothingToShow(getCount() == 0)
                             swipe_refresh.isRefreshing = false
                             Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths())
                         })
