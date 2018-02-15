@@ -44,6 +44,11 @@ class AlbumsFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         // todo set toolbar
         setHasOptionsMenu(true)
+        excluded = db().getExcludedFolders(context!!)
+    }
+
+    private fun db(): HandlingAlbums {
+        return HandlingAlbums.getInstance(context!!.getApplicationContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

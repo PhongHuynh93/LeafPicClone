@@ -21,6 +21,7 @@ import example.test.phong.leafpicclone.util.whenNull
 import example.test.phong.leafpicclone.view.navigation_drawer.NavigationDrawer
 import example.test.phong.leafpicclone.view.themeable.ThemedToolbar
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.error_layout.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
 
@@ -56,7 +57,16 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
     }
 
     override fun changedNothingToShow(nothingToShow: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        enableNothingToSHowPlaceHolder(nothingToShow)
+    }
+
+    private fun enableNothingToSHowPlaceHolder(status: Boolean) {
+        nothing_to_show_placeholder.visibility =
+                if (status) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
     }
 
     override fun changedEditMode(editMode: Boolean, selected: Int, total: Int, listener: View.OnClickListener?, title: String?) {

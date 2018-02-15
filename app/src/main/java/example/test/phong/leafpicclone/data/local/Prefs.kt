@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.content.edit
 import example.test.phong.leafpicclone.data.CardViewStyle
-import example.test.phong.leafpicclone.data.sort.SortingMode
 import example.test.phong.leafpicclone.data.SortingOrder
+import example.test.phong.leafpicclone.data.sort.SortingMode
 
 /**
  * Created by user on 2/9/2018.
@@ -59,6 +59,11 @@ class Prefs {
         fun showVideos(): Boolean {
             return sharedPrefs.get(Keys.SHOW_VIDEOS, Defaults.SHOW_VIDEOS)
         }
+
+        fun setShowVideos(value: Boolean) {
+            sharedPrefs.put(Keys.SHOW_VIDEOS, value)
+        }
+
     }
 }
 

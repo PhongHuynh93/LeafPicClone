@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import example.test.phong.leafpicclone.data.sort.SortingMode
 import example.test.phong.leafpicclone.util.StringUtils
 import example.test.phong.leafpicclone.util.whenNull
+import java.io.File
+import java.util.*
 
 /**
  * Created by user on 2/14/2018.
@@ -116,6 +118,33 @@ class HandlingAlbums(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ALBUMS)
         db.execSQL("DROP INDEX IF EXISTS idx_path")
         onCreate(db)
+    }
+
+    fun getExcludedFolders(context: Context): ArrayList<String> {
+        val list = ArrayList<String>()
+        val storageRoots = StorageHelper.getStorageRoots(context)
+        for (file in storageRoots)
+        // it has a lot of garbage
+            list.add(File(file.path, "Android").getPath())
+
+        list.addAll(getFolders(EXCLUDED))
+        return list
+    }
+
+    /**
+     *
+     * @param status 1 for EXCLUDED, 2 for INCLUDED
+     * @return
+     */
+    fun getFolders(status: Int): ArrayList<String> {
+        val list = ArrayList<String>()
+        val db = readableDatabase
+        val cur = db.query(TABLE_ALBUMS, arrayOf(ALBUM_PATH), ALBUM_STATUS + "=?", arrayOf(status.toString()), null, null, null)
+        if (cur.moveToFirst())
+            do list.add(cur.getString(0)) while (cur.moveToNext())
+        cur.close()
+        db.close()
+        return list
     }
 
 }

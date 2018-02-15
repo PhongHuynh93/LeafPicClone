@@ -3,6 +3,7 @@ package example.test.phong.leafpicclone.data.provider
 import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
+import java.util.*
 
 /**
  * Created by user on 2/14/2018.
@@ -54,6 +55,9 @@ class Query {
         return builder.toString()
     }
 
+    override fun toString(): String {
+        return "Query(uri=$uri, projection=${Arrays.toString(projection)}, selection=$selection, args=${Arrays.toString(args)}, sort=$sort, ascending=$ascending, limit=$limit)"
+    }
 
     class Builder {
         internal var uri: Uri? = null
@@ -110,4 +114,6 @@ class Query {
             return Query(this)
         }
     }
+
+
 }
