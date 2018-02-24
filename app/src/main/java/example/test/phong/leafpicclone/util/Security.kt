@@ -1,5 +1,6 @@
 package example.test.phong.leafpicclone.util
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Build
@@ -7,12 +8,16 @@ import android.os.CancellationSignal
 import android.os.IBinder
 import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.CardView
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.TextView
 import com.orhanobut.hawk.Hawk
 import example.test.phong.leafpicclone.R
 import org.horaapps.liz.ThemeHelper
 import org.horaapps.liz.ThemedActivity
+import org.horaapps.liz.ui.ThemedIcon
 import java.security.MessageDigest
 
 /**
@@ -54,22 +59,22 @@ class Security {
             return Hawk.delete("password_hash")
         }
 
-        @RequiresApi(Build.VERSION_CODES.M)
+        @TargetApi(Build.VERSION_CODES.M)
         fun authenticateUser(activity: ThemedActivity, passwordInterface: AuthCallBack) {
             val builder = AlertDialog.Builder(activity, activity.dialogStyle)
             val mCancellationSignal = CancellationSignal()
 
             val view = activity.layoutInflater.inflate(R.layout.dialog_password, null)
-            val passwordDialogTitle = view.findViewById(R.id.password_dialog_title)
-            val passwordDialogCard = view.findViewById(R.id.password_dialog_card)
-            val editTextPassword = view.findViewById(R.id.password_edittxt)
-            val fingerprintIcon = view.findViewById(R.id.fingerprint_icon)
+            val passwordDialogTitle = view.findViewById(R.id.password_dialog_title) as TextView
+            val passwordDialogCard = view.findViewById(R.id.password_dialog_card) as CardView
+            val editTextPassword = view.findViewById(R.id.password_edittxt) as EditText
+            val fingerprintIcon = view.findViewById(R.id.fingerprint_icon) as ThemedIcon
 
 
             passwordDialogTitle.setBackgroundColor(activity.primaryColor)
             passwordDialogCard.setBackgroundColor(activity.cardBackgroundColor)
             ThemeHelper.setCursorColor(editTextPassword, activity.textColor)
-            editTextPassword.getBackground().mutate().setColorFilter(activity.textColor, PorterDuff.Mode.SRC_ATOP)
+            editTextPassword.background.mutate().setColorFilter(activity.textColor, PorterDuff.Mode.SRC_ATOP)
             editTextPassword.setTextColor(activity.textColor)
             fingerprintIcon.setColor(activity.iconColor)
 
@@ -79,7 +84,7 @@ class Security {
                 // NOTE: set this empty, later will be overwrite to avoid the dismiss
             }
 
-            builder.setNegativeButton(activity.getString(R.string.cancel).toUpperCase()) { dialog, which -> hideKeyboard(activity, editTextPassword.getWindowToken()) }
+            builder.setNegativeButton(activity.getString(R.string.cancel).toUpperCase()) { dialog, which -> hideKeyboard(activity, editTextPassword.windowToken) }
 
             val dialog = builder.create()
             dialog.show()
@@ -91,7 +96,7 @@ class Security {
                 if (fingerprintHandler.isFingerprintSupported) {
                     fingerprintHandler.setOnFingerprintResult(object : FingerprintHandler.CallBack {
                         override fun onSuccess() {
-                            hideKeyboard(activity, editTextPassword.getWindowToken())
+                            hideKeyboard(activity, editTextPassword.windowToken)
                             dialog.dismiss()
                             passwordInterface.onAuthenticated()
                         }
@@ -103,20 +108,20 @@ class Security {
 
                     fingerprintHandler.startAuth()
                 } else {
-                    fingerprintIcon.setVisibility(View.GONE)
+                    fingerprintIcon.visibility = View.GONE
                 }
             } else {
-                fingerprintIcon.setVisibility(View.GONE)
+                fingerprintIcon.visibility = View.GONE
             }
 
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { v ->
-                if (checkPassword(editTextPassword.getText().toString())) {
-                    hideKeyboard(activity, editTextPassword.getWindowToken())
+                if (checkPassword(editTextPassword.text.toString())) {
+                    hideKeyboard(activity, editTextPassword.windowToken)
                     mCancellationSignal.cancel()
                     dialog.dismiss()
                     passwordInterface.onAuthenticated()
                 } else {
-                    editTextPassword.getText().clear()
+                    editTextPassword.text.clear()
                     editTextPassword.requestFocus()
                     passwordInterface.onError()
                 }

@@ -1,15 +1,20 @@
 package example.test.phong.leafpicclone.data
 
+import android.annotation.SuppressLint
 import android.database.Cursor
+import android.os.Parcelable
 import android.provider.MediaStore
 import com.bumptech.glide.signature.ObjectKey
 import example.test.phong.leafpicclone.util.StringUtils
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Created by user on 2/8/2018.
  */
+@Parcelize
+@SuppressLint("ParcelCreator")
 data class Album @JvmOverloads constructor(var name: String? = null, val path: String? = null, var id: Long = -1, var dateModifier: Long = -1, var count: Int = -1,
-                                           var selected: Boolean = false, var settings: AlbumSettings? = null, var lastMedia: Media? = null) : CursorHandler<Album> {
+                                           var selected: Boolean = false, var settings: AlbumSettings? = null, var lastMedia: Media? = null) : CursorHandler<Album>, Parcelable {
 
     constructor(cur: Cursor) : this(
             path = StringUtils.getBucketPathByImagePath(cur.getString(3)),
@@ -77,9 +82,10 @@ data class Album @JvmOverloads constructor(var name: String? = null, val path: S
     fun isPinned(): Boolean = settings?.coverPath != null
 }
 
-
+@SuppressLint("ParcelCreator")
+@Parcelize
 data class Media @JvmOverloads constructor(var path: String? = null, var dateModifier: Long = -1, var mimeType: String = "unknow", var orientation: Int = 0,
-                                           var uriString: String? = null, var size: Int = -1, var selected: Boolean = false) {
+                                           var uriString: String? = null, var size: Int = -1, var selected: Boolean = false) : Parcelable {
     fun getSignature(): ObjectKey {
         return ObjectKey(dateModifier.toString() + path + orientation)
     }

@@ -23,6 +23,11 @@ android {
     dataBinding {
         enabled = true
     }
+
+    // use coroutines and parcel in kotlin
+    androidExtensions {
+        experimental = true
+    }
 }
 
 dependencies {
