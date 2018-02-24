@@ -1,6 +1,7 @@
 package example.test.phong.leafpicclone.view.navigation_drawer
 
 import android.content.Context
+import android.support.annotation.ColorInt
 import android.support.annotation.IdRes
 import android.support.annotation.IntDef
 import android.util.AttributeSet
@@ -83,5 +84,17 @@ class NavigationDrawer @JvmOverloads constructor(context: Context, attrs: Attrib
 
     fun setAppVersion(versioN_NAME: String) {
         navigation_drawer_header_version.text = versioN_NAME
+    }
+
+    fun setTheme(@ColorInt primaryColor: Int, @ColorInt backgroundColor: Int,
+                 @ColorInt textColor: Int, @ColorInt iconColor: Int) {
+
+        setBackgroundColor(backgroundColor)
+        navigation_drawer_header.setBackgroundColor(primaryColor)
+
+        for (navigationEntry in navigationEntries) {
+            navigationEntry.setTextColor(textColor)
+            navigationEntry.setIconColor(iconColor)
+        }
     }
 }

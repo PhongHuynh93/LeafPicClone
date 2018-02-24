@@ -148,8 +148,8 @@ class AlbumsFragment : BaseFragment(), AnkoLogger {
                     nothingToShowListener?.changedNothingToShow(getCount() == 0)
                 }
                 .subscribeBy(
-                        onNext = { album -> mAdapter?.add(album) },
-                        onError = { throwable -> throwable.printStackTrace() } ,
+                        onNext = { mAdapter?.add(it) },
+                        onError = { it.printStackTrace() },
                         onComplete = { Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths()) })
     }
 

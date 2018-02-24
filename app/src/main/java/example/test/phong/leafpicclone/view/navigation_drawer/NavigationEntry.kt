@@ -1,6 +1,7 @@
 package example.test.phong.leafpicclone.view.navigation_drawer
 
 import android.content.Context
+import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.Gravity
@@ -8,7 +9,6 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.mikepenz.iconics.IconicsDrawable
 import example.test.phong.leafpicclone.R
-import kotlinx.android.synthetic.main.view_navigation_entry.*
 import kotlinx.android.synthetic.main.view_navigation_entry.view.*
 
 /**
@@ -52,5 +52,13 @@ class NavigationEntry@JvmOverloads constructor(context: Context, attrs: Attribut
 
     private fun setIcon(iconText: String) {
         navigation_item_icon.setIcon(IconicsDrawable(context, iconText))
+    }
+
+    fun setTextColor(@ColorInt colorRes: Int) {
+        navigation_item_text.setTextColor(colorRes)
+    }
+
+    fun setIconColor(@ColorInt colorRes: Int) {
+        navigation_item_icon.setColor(colorRes)
     }
 }

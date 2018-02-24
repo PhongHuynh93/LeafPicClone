@@ -20,6 +20,8 @@ data class Album @JvmOverloads constructor(var name: String? = null, val path: S
             lastMedia = Media(cur.getString(3)))
 
     companion object {
+        val ALL_MEDIA_ALBUM_ID: Long = 8000
+
         fun getEmptyAlbum(): Album {
             val album = Album(name = null, path = null, settings = AlbumSettings.getDefaults())
             return album
@@ -27,6 +29,12 @@ data class Album @JvmOverloads constructor(var name: String? = null, val path: S
 
         fun getProjection(): Array<String> {
             return arrayOf(MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, "count(*)", MediaStore.Images.Media.DATA, "max(" + MediaStore.Images.Media.DATE_MODIFIED + ")")
+        }
+
+        fun getAllMediaAlbum(): Album {
+            val album = Album(name = "All Media", id = ALL_MEDIA_ALBUM_ID)
+            album.settings = AlbumSettings.getDefaults()
+            return album
         }
     }
 
@@ -66,7 +74,7 @@ data class Album @JvmOverloads constructor(var name: String? = null, val path: S
         return arrayOf(MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, "count(*)", MediaStore.Images.Media.DATA, "max(" + MediaStore.Images.Media.DATE_MODIFIED + ")")
     }
 
-    fun isPinned():Boolean = settings?.coverPath != null
+    fun isPinned(): Boolean = settings?.coverPath != null
 }
 
 
