@@ -6,6 +6,8 @@ import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.View
 import android.widget.Toast
@@ -17,12 +19,10 @@ import example.test.phong.leafpicclone.R
 import example.test.phong.leafpicclone.activities.base.SharedMediaActivity
 import example.test.phong.leafpicclone.data.Album
 import example.test.phong.leafpicclone.databinding.ActivityMainBinding
-import example.test.phong.leafpicclone.fragments.AlbumClickListener
-import example.test.phong.leafpicclone.fragments.AlbumsFragment
-import example.test.phong.leafpicclone.fragments.EditModeListener
-import example.test.phong.leafpicclone.fragments.NothingToShowListener
+import example.test.phong.leafpicclone.fragments.*
 import example.test.phong.leafpicclone.util.Security
 import example.test.phong.leafpicclone.util.addFragment
+import example.test.phong.leafpicclone.util.replaceFragmentSafely
 import example.test.phong.leafpicclone.util.whenNull
 import example.test.phong.leafpicclone.view.navigation_drawer.NavigationDrawer
 import example.test.phong.leafpicclone.view.themeable.ThemedToolbar
@@ -33,6 +33,13 @@ import org.jetbrains.anko.debug
 
 class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, EditModeListener, NothingToShowListener, NavigationDrawer.ItemListener {
     private lateinit var mBinding: ActivityMainBinding
+    private var albumsMode: Boolean = false
+    private lateinit var albumsFragment: AlbumsFragment
+
+    companion object {
+        val ARGS_PICK_MODE = "pick_mode"
+        private val SAVE_ALBUM_MODE = "album_mode"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +52,7 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
         // todo add fragment album
         savedInstanceState.whenNull {
             debug { "add fragment album" }
-            val albumsFragment = AlbumsFragment.newInstance()
+            albumsFragment = AlbumsFragment.newInstance()
                     .apply {
                         clickListener = this@MainActivity
                         editModeListener = this@MainActivity
@@ -55,12 +62,35 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
             return
         }
 
-        // todo restore to state
+        // restore to state
+        restoreState(savedInstanceState!!)
 
-        // todo add fragment media
+        if (!albumsMode) {
+            rvMediaFragment = supportFragmentManager.findFragmentByTag(RvMediaFragment.TAG) as RvMediaFragment
+            rvMediaFragment.apply {
+                clickListener = this@MainActivity
+                editModeListener = this@MainActivity
+                nothingToShowListener = this@MainActivity
+            }
+        }
+
+        albumsFragment = supportFragmentManager.findFragmentByTag(AlbumsFragment.TAG) as AlbumsFragment
+        albumsFragment.apply {
+            clickListener = this@MainActivity
+            editModeListener = this@MainActivity
+            nothingToShowListener = this@MainActivity
+        }
     }
 
-    //    fixme should change this name
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(SAVE_ALBUM_MODE, albumsMode)
+    }
+
+    private fun restoreState(savedInstance: Bundle) {
+        albumsMode = savedInstance.getBoolean(SAVE_ALBUM_MODE, true)
+    }
+
     override fun changedNothingToShow(isLoading: Boolean) {
         mBinding.isLoading = isLoading
     }
@@ -73,8 +103,18 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
         displayMedia(album)
     }
 
+    private lateinit var rvMediaFragment: RvMediaFragment
+
     private fun displayMedia(album: Album) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        rvMediaFragment = RvMediaFragment.make(album).apply {
+            clickListener = this@MainActivity
+            editModeListener = this@MainActivity
+            nothingToShowListener = this@MainActivity
+        }
+
+        albumsMode = false
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        replaceFragmentSafely(rvMediaFragment, containerViewId = R.id.content)
     }
 
     private fun initUi() {
@@ -99,7 +139,7 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
         home_navigation_drawer.setAppVersion(BuildConfig.VERSION_NAME)
     }
 
-    // // TODO: 2/24/2018 when choosing a item in navigation drawer
+    // : 2/24/2018 when choosing a item in navigation drawer
     override fun onItemSelected(@NavigationDrawer.NavigationItem navigationItemSelected: Int) {
         closeDrawer()
         when (navigationItemSelected) {
@@ -125,24 +165,32 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
     }
 
     private fun askPassword() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Security.authenticateUser(this@MainActivity, object : Security.AuthCallBack {
+            override fun onAuthenticated() {
+                closeDrawer()
+                displayAlbums(true)
+            }
+
+            override fun onError() {
+                Toast.makeText(applicationContext, R.string.wrong_password, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    private fun displayAlbums(b: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun displayAlbums(hidden: Boolean) {
+        albumsMode = true
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        albumsFragment.displayAlbums(hidden)
     }
 
     private fun closeDrawer() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        drawer_layout.closeDrawer(GravityCompat.START)
     }
 
     override fun updateUiElements() {
         super.updateUiElements()
-        //TODO: MUST BE FIXED
         toolbar.popupTheme = popupToolbarStyle
         toolbar.setBackgroundColor(primaryColor)
-
-        /**** SWIPE TO REFRESH ****/
 
         setStatusBarColor()
         setNavBarColor()
@@ -155,7 +203,6 @@ class MainActivity : SharedMediaActivity(), AnkoLogger, AlbumClickListener, Edit
 
         home_navigation_drawer.setTheme(primaryColor, backgroundColor, textColor, iconColor)
 
-        // TODO Calvin: This performs a NO-OP. Find out what this is used for
         setRecentApp(getString(R.string.app_name))
     }
 }

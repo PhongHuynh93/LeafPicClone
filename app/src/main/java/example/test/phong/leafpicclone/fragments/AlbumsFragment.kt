@@ -35,10 +35,12 @@ import java.util.*
  */
 class AlbumsFragment : BaseFragment(), AnkoLogger {
     companion object {
+        val TAG = "AlbumsFragment"
+
         fun newInstance() = AlbumsFragment()
     }
 
-    private val hidden: Boolean = false
+    private var hidden: Boolean = false
     private var excluded = ArrayList<String>()
     private var mAdapter: AlbumsAdapter? = null
     var clickListener: AlbumClickListener? = null
@@ -151,6 +153,11 @@ class AlbumsFragment : BaseFragment(), AnkoLogger {
                         onNext = { mAdapter?.add(it) },
                         onError = { it.printStackTrace() },
                         onComplete = { Hawk.put(if (hidden) "h" else "albums", mAdapter?.getAlbumsPaths()) })
+    }
+
+    fun displayAlbums(hidden: Boolean) {
+        this.hidden = hidden
+        displayAlbums()
     }
 
     private fun getCount(): Int = mAdapter?.itemCount ?: 0
